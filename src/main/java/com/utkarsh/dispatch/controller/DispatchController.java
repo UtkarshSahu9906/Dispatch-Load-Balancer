@@ -1,8 +1,10 @@
 package com.utkarsh.dispatch.controller;
 
 import com.utkarsh.dispatch.dto.ApiResponseDTO;
+import com.utkarsh.dispatch.dto.DispatchPlanResponseDTO;
 import com.utkarsh.dispatch.dto.OrderBatchRequestDTO;
 import com.utkarsh.dispatch.dto.VehicleBatchRequestDTO;
+import com.utkarsh.dispatch.service.DispatchService;
 import com.utkarsh.dispatch.service.OrderService;
 import com.utkarsh.dispatch.service.VehicleService;
 
@@ -17,13 +19,16 @@ public class DispatchController {
 
     private final OrderService orderService;
     private final VehicleService vehicleService;
+    private final DispatchService dispatchService;
 
     public DispatchController(
             OrderService orderService,
-            VehicleService vehicleService
+            VehicleService vehicleService,
+            DispatchService dispatchService
     ) {
         this.orderService = orderService;
         this.vehicleService = vehicleService;
+        this.dispatchService = dispatchService;
     }
 
     @PostMapping("/orders")
@@ -32,6 +37,14 @@ public class DispatchController {
     ) {
         ApiResponseDTO response =
                 orderService.saveOrders(request.getOrders());
+
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/plan")
+    public ResponseEntity<DispatchPlanResponseDTO> getDispatchPlan() {
+
+        DispatchPlanResponseDTO response =
+                dispatchService.generateDispatchPlan();
 
         return ResponseEntity.ok(response);
     }

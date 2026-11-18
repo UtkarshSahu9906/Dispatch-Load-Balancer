@@ -34,4 +34,6 @@ public class DeliveryOrder {
     @Column(nullable = false)
     private Priority priority;
 
+
+
 }

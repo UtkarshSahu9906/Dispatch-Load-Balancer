@@ -1,5 +1,6 @@
 package com.utkarsh.dispatch;
 
+import com.utkarsh.dispatch.util.DistanceCalculator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -7,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class DispatchLoadBalancerApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(
 				DispatchLoadBalancerApplication.class,
 				args
