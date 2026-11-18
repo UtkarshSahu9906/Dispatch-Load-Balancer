@@ -12,5 +12,4 @@ import java.util.List;
 public class OrderBatchRequestDTO {
 
     @NotEmpty(message = "At least one order is required")
-    private List<@Valid OrderRequestDTO> orders;
-}
+    private List<@Valid OrderRequestDTO> orders;}
