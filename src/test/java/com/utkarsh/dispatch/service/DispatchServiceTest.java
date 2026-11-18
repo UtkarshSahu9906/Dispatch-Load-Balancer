@@ -56,7 +56,113 @@ class DispatchServiceTest {
                 response.getUnassignedOrders().get(0).getOrderId()
         );
     }
+    @Test
+    void shouldReturnEmptyAssignmentsWhenNoOrdersAvailable() {
 
+        // Arrange
+        Vehicle vehicle = new Vehicle();
+        vehicle.setVehicleId("VEH001");
+        vehicle.setCapacity(new BigDecimal("100"));
+        vehicle.setCurrentLatitude(28.6139);
+        vehicle.setCurrentLongitude(77.2090);
+        vehicle.setCurrentAddress("Delhi");
+
+        when(orderRepository.findAll())
+                .thenReturn(List.of());
+
+        when(vehicleRepository.findAll())
+                .thenReturn(List.of(vehicle));
+
+        // Act
+        DispatchPlanResponseDTO response =
+                dispatchService.generateDispatchPlan();
+
+        // Assert
+        assertEquals(1, response.getDispatchPlan().size());
+
+        assertTrue(
+                response.getDispatchPlan()
+                        .get(0)
+                        .getAssignedOrders()
+                        .isEmpty()
+        );
+
+        assertTrue(response.getUnassignedOrders().isEmpty());
+    }
+    @Test
+    void shouldMarkOrderUnassignedWhenWeightExceedsVehicleCapacity() {
+
+        // Arrange
+        Vehicle vehicle = new Vehicle();
+        vehicle.setVehicleId("VEH001");
+        vehicle.setCapacity(new BigDecimal("10"));
+        vehicle.setCurrentLatitude(28.6139);
+        vehicle.setCurrentLongitude(77.2090);
+        vehicle.setCurrentAddress("Delhi");
+
+        DeliveryOrder order = createOrder(
+                "ORD004", "15", Priority.HIGH
+        );
+
+        when(orderRepository.findAll())
+                .thenReturn(List.of(order));
+
+        when(vehicleRepository.findAll())
+                .thenReturn(List.of(vehicle));
+
+        // Act
+        DispatchPlanResponseDTO response =
+                dispatchService.generateDispatchPlan();
+
+        // Assert
+        assertEquals(1, response.getUnassignedOrders().size());
+
+        assertEquals(
+                "ORD004",
+                response.getUnassignedOrders().get(0).getOrderId()
+        );
+
+        assertTrue(response.getDispatchPlan().get(0)
+                .getAssignedOrders().isEmpty());
+    }
+    @Test
+    void shouldSortOrdersByIdWhenPriorityIsSame() {
+
+        // Arrange
+        Vehicle vehicle = new Vehicle();
+        vehicle.setVehicleId("VEH001");
+        vehicle.setCapacity(new BigDecimal("100"));
+        vehicle.setCurrentLatitude(28.6139);
+        vehicle.setCurrentLongitude(77.2090);
+        vehicle.setCurrentAddress("Delhi");
+
+        DeliveryOrder orderC = createOrder("ORD003", "5", Priority.HIGH);
+        DeliveryOrder orderA = createOrder("ORD001", "5", Priority.HIGH);
+        DeliveryOrder orderB = createOrder("ORD002", "5", Priority.HIGH);
+
+        when(orderRepository.findAll())
+                .thenReturn(List.of(orderC, orderA, orderB));
+
+        when(vehicleRepository.findAll())
+                .thenReturn(List.of(vehicle));
+
+        // Act
+        DispatchPlanResponseDTO response =
+                dispatchService.generateDispatchPlan();
+
+        // Assert
+        List<String> assignedOrderIds = response.getDispatchPlan()
+                .get(0)
+                .getAssignedOrders()
+                .stream()
+                .map(order -> order.getOrderId())
+                .toList();
+
+        assertEquals(
+                List.of("ORD001", "ORD002", "ORD003"),
+                assignedOrderIds
+        );
+    }
     @Test
     void shouldAssignHighPriorityOrderBeforeLowPriorityOrder() {
 
