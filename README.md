@@ -17,7 +17,7 @@ The application uses the **Haversine formula** to calculate distances between de
 - Request validation using Jakarta Validation.
 - Batch database operations.
 - Unit testing with JUnit and Mockito.
-- Performance testing with a sample workload of 1,000 orders and 50 vehicles.
+- Performance testing with 1,000 orders and 50 vehicles.
 
 ## Technology Stack
 
@@ -32,53 +32,24 @@ The application uses the **Haversine formula** to calculate distances between de
 | Jakarta Validation | Request validation |
 | JUnit 5 | Unit testing |
 | Mockito | Mocking dependencies |
-| Python 3 | Performance testing script |
+| Python 3 | Performance testing |
 
 ## Project Structure
 
 ```text
-dispatch-load-balancer/
+Dispatch-Load-Balancer/
 │
 ├── src/
 │   ├── main/
 │   │   ├── java/com/utkarsh/dispatch/
 │   │   │   ├── controller/
-│   │   │   │   └── DispatchController.java
-│   │   │   │
 │   │   │   ├── dispatch/
-│   │   │   │   └── VehicleRoute.java
-│   │   │   │
 │   │   │   ├── dto/
-│   │   │   │   ├── ApiResponseDTO.java
-│   │   │   │   ├── DispatchPlanDTO.java
-│   │   │   │   ├── DispatchPlanResponseDTO.java
-│   │   │   │   ├── OrderBatchRequestDTO.java
-│   │   │   │   ├── OrderRequestDTO.java
-│   │   │   │   ├── OrderResponseDTO.java
-│   │   │   │   ├── UnassignedOrderDTO.java
-│   │   │   │   ├── VehicleBatchRequestDTO.java
-│   │   │   │   └── VehicleRequestDTO.java
-│   │   │   │
 │   │   │   ├── exception/
-│   │   │   │   └── GlobalExceptionHandler.java
-│   │   │   │
 │   │   │   ├── model/
-│   │   │   │   ├── DeliveryOrder.java
-│   │   │   │   ├── Priority.java
-│   │   │   │   └── Vehicle.java
-│   │   │   │
 │   │   │   ├── repository/
-│   │   │   │   ├── OrderRepository.java
-│   │   │   │   └── VehicleRepository.java
-│   │   │   │
 │   │   │   ├── service/
-│   │   │   │   ├── DispatchService.java
-│   │   │   │   ├── OrderService.java
-│   │   │   │   └── VehicleService.java
-│   │   │   │
 │   │   │   ├── util/
-│   │   │   │   └── DistanceCalculator.java
-│   │   │   │
 │   │   │   └── DispatchLoadBalancerApplication.java
 │   │   │
 │   │   └── resources/
@@ -93,8 +64,10 @@ dispatch-load-balancer/
 │
 ├── .env.example
 ├── .gitignore
-├── performance-test.py
+├── mvnw
+├── mvnw.cmd
 ├── pom.xml
+├── performance-test.py
 └── README.md
 ```
 
@@ -129,15 +102,21 @@ CREATE DATABASE dispatch_db;
 
 ### 2. Configure Environment Variables
 
-The project includes an `.env.example` file containing the required database configuration.
+Clone the repository and navigate to the project directory:
 
-Copy it to create your local environment file:
+```bash
+git clone https://github.com/UtkarshSahu9906/Dispatch-Load-Balancer.git
+
+cd Dispatch-Load-Balancer
+```
+
+Copy the example environment file:
 
 ```bash
 cp .env.example .env
 ```
 
-Update the `.env` file with your MySQL credentials:
+Update `.env` with your MySQL credentials:
 
 ```env
 DB_URL=jdbc:mysql://localhost:3306/dispatch_db
@@ -151,28 +130,28 @@ The application loads these environment variables through `application.yaml`.
 
 ## Running the Application
 
-### 1. Clone the Repository
-
-```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
-```
-
-### 2. Navigate to the Project Directory
-
-```bash
-cd dispatch-load-balancer
-```
-
-### 3. Build the Application
+### 1. Build the Application
 
 ```bash
 mvn clean install
 ```
 
-### 4. Run the Application
+Alternatively, use the Maven wrapper:
+
+```bash
+./mvnw clean install
+```
+
+### 2. Run the Application
 
 ```bash
 mvn spring-boot:run
+```
+
+Alternatively:
+
+```bash
+./mvnw spring-boot:run
 ```
 
 The application runs at:
@@ -310,6 +289,8 @@ The example is illustrative. Actual assignments and distances depend on the orde
 | 400 Bad Request | Invalid request or validation failure |
 | 500 Internal Server Error | Unexpected server-side error |
 
+All three endpoints return HTTP 200 when the request is processed successfully.
+
 ## Dispatch Algorithm
 
 The application follows a **greedy allocation approach** to assign delivery orders to vehicles.
@@ -332,8 +313,6 @@ The application follows a **greedy allocation approach** to assign delivery orde
 
 The application uses the Haversine formula to calculate geographical distance between two latitude-longitude coordinates.
 
-The formula calculates the great-circle distance between two points on a sphere.
-
 Earth's mean radius is taken as approximately:
 
 ```text
@@ -343,6 +322,8 @@ Earth's mean radius is taken as approximately:
 The calculated distance is used to estimate the additional travel distance when assigning an order to a vehicle.
 
 **Note:** The greedy algorithm makes locally efficient assignments but does not guarantee a globally optimal allocation or route.
+
+The route distance represents the distance from the vehicle's starting location through its assigned delivery stops. It does not include a return trip to the starting location.
 
 ## Validation
 
@@ -369,7 +350,7 @@ Duplicate IDs within the same batch request are also rejected.
 
 ## Exception Handling
 
-The application uses a centralized exception handling mechanism through `GlobalExceptionHandler`.
+The application uses centralized exception handling through `GlobalExceptionHandler`.
 
 It handles:
 
@@ -398,7 +379,7 @@ Hibernate JDBC batching is configured in `application.yaml` to support more effi
 
 The project includes unit tests using JUnit 5 and Mockito.
 
-Test coverage includes:
+Test scenarios include:
 
 - Haversine distance calculation.
 - Dispatch allocation logic.
@@ -414,6 +395,12 @@ Run the complete test suite:
 
 ```bash
 mvn clean test
+```
+
+Or:
+
+```bash
+./mvnw clean test
 ```
 
 ## Performance Testing
