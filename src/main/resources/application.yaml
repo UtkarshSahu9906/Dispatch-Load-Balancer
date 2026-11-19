@@ -22,5 +22,6 @@ spring:
         order_inserts: true
         order_updates: true
 
+
 server:
-  port: 8080
+  port: ${PORT:8080}
